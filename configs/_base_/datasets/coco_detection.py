@@ -1,7 +1,22 @@
 # dataset settings
 dataset_type = 'CocoDataset'
 data_root = 'data/coco/'
-
+classes = [
+    "boots-powerup",
+    "boxtrain",
+    "jump-barrier",
+    "jump-electric",
+    "jump-hedge",
+    "jump-roll-barrier",
+    "jump-trash",
+    "ledge",
+    "pogstick-powerup",
+    "ramp",
+    "roll-barrier",
+    "train",
+    "undercover-barrier",
+    "wall",
+]
 # Example to use different file client
 # Method 1: simply set the data root and let the file I/O module
 # automatically infer from prefix (not support LMDB and Memcache yet)
@@ -38,30 +53,36 @@ train_dataloader = dict(
     batch_size=2,
     num_workers=2,
     persistent_workers=True,
-    sampler=dict(type='DefaultSampler', shuffle=True),
-    batch_sampler=dict(type='AspectRatioBatchSampler'),
+    sampler=dict(type="DefaultSampler", shuffle=True),
+    batch_sampler=dict(type="AspectRatioBatchSampler"),
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/instances_train2017.json',
-        data_prefix=dict(img='train2017/'),
+        ann_file="annotations/instances_train2017.json",
+        data_prefix=dict(img="train2017/"),
         filter_cfg=dict(filter_empty_gt=True, min_size=32),
         pipeline=train_pipeline,
-        backend_args=backend_args))
+        metainfo=dict(classes=classes),
+        backend_args=backend_args,
+    ),
+)
 val_dataloader = dict(
     batch_size=1,
     num_workers=2,
     persistent_workers=True,
     drop_last=False,
-    sampler=dict(type='DefaultSampler', shuffle=False),
+    sampler=dict(type="DefaultSampler", shuffle=False),
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='annotations/instances_val2017.json',
-        data_prefix=dict(img='val2017/'),
+        ann_file="annotations/instances_val2017.json",
+        data_prefix=dict(img="val2017/"),
         test_mode=True,
         pipeline=test_pipeline,
-        backend_args=backend_args))
+        metainfo=dict(classes=classes),
+        backend_args=backend_args,
+    ),
+)
 test_dataloader = val_dataloader
 
 val_evaluator = dict(
